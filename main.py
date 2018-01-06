@@ -123,7 +123,7 @@ class ShapesDataset(utils.Dataset):
         """
         info = self.image_info[image_id]
         img = Image.open(io.BytesIO(self.lzy_sftp.open(info['path'] + '/img.png').read()))
-        return np.array(img).astype(np.uint8)
+        return np.array(img).astype(np.uint8)[..., 0: 3]
 
     def image_reference(self, image_id):
         """Return the shapes data of the image."""
