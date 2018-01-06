@@ -148,14 +148,13 @@ class ShapesDataset(utils.Dataset):
                     x, y = int(x), int(y)
                     polygons[-1].append((x, y))
 
-        temp = [[Image.new('RGB', (640, 640), color = 0), True] for _ in range(len(polygons))]
+        temp = [[Image.new('P', (640, 640), color = 0), True] for _ in range(len(polygons))]
         for i, polygon in enumerate(polygons):
             draw = ImageDraw.Draw(temp[i][0])
             draw.polygon(polygon, fill = 255, outline = 255)
             if np.array(temp[i][0]).astype(np.int32).sum() == 0:
                 temp[i][1] = False
         temp = [item[0] for item in temp if item[1]]
-        print(temp[0].size)
 
         mask = np.zeros([640, 640, len(temp)], dtype=np.uint8)
         for i, item in enumerate(temp):
