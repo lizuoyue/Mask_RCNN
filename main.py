@@ -165,53 +165,54 @@ class ShapesDataset(utils.Dataset):
         class_ids = np.array([self.class_names.index('house') for _ in temp])
         return mask, class_ids.astype(np.int32)
 
-# Training dataset
-dataset_train = ShapesDataset()
-dataset_train.load_images(True, '/local/lizuoyue/Chicago_Area')
-dataset_train.prepare()
+if False:
+    # Training dataset
+    dataset_train = ShapesDataset()
+    dataset_train.load_images(True, '/local/lizuoyue/Chicago_Area')
+    dataset_train.prepare()
 
-# Validation dataset
-dataset_val = ShapesDataset()
-dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
-dataset_val.prepare()
+    # Validation dataset
+    dataset_val = ShapesDataset()
+    dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
+    dataset_val.prepare()
 
-# Create model in training mode
-model = modellib.MaskRCNN(mode="training", config=config,
-                          model_dir=MODEL_DIR)
+    # Create model in training mode
+    model = modellib.MaskRCNN(mode="training", config=config,
+                              model_dir=MODEL_DIR)
 
-# Which weights to start with?
-init_with = "coco"  # imagenet, coco, or last
+    # Which weights to start with?
+    init_with = "last"  # imagenet, coco, or last
 
-if init_with == "imagenet":
-    model.load_weights(model.get_imagenet_weights(), by_name=True)
-elif init_with == "coco":
-    # Load weights trained on MS COCO, but skip layers that
-    # are different due to the different number of classes
-    # See README for instructions to download the COCO weights
-    model.load_weights(COCO_MODEL_PATH, by_name=True,
-                       exclude=["mrcnn_class_logits", "mrcnn_bbox_fc", 
-                                "mrcnn_bbox", "mrcnn_mask"])
-elif init_with == "last":
-    # Load the last model you trained and continue training
-    model.load_weights(model.find_last()[1], by_name=True)
+    if init_with == "imagenet":
+        model.load_weights(model.get_imagenet_weights(), by_name=True)
+    elif init_with == "coco":
+        # Load weights trained on MS COCO, but skip layers that
+        # are different due to the different number of classes
+        # See README for instructions to download the COCO weights
+        model.load_weights(COCO_MODEL_PATH, by_name=True,
+                           exclude=["mrcnn_class_logits", "mrcnn_bbox_fc", 
+                                    "mrcnn_bbox", "mrcnn_mask"])
+    elif init_with == "last":
+        # Load the last model you trained and continue training
+        model.load_weights(model.find_last()[1], by_name=True)
 
-# Train the head branches
-# Passing layers="heads" freezes all layers except the head
-# layers. You can also pass a regular expression to select
-# which layers to train by name pattern.
-model.train(dataset_train, dataset_val, 
-            learning_rate=config.LEARNING_RATE, 
-            epochs=1, 
-            layers='heads')
+    # Train the head branches
+    # Passing layers="heads" freezes all layers except the head
+    # layers. You can also pass a regular expression to select
+    # which layers to train by name pattern.
+    model.train(dataset_train, dataset_val, 
+                learning_rate=config.LEARNING_RATE, 
+                epochs=1, 
+                layers='heads')
 
-# Fine tune all layers
-# Passing layers="all" trains all layers. You can also 
-# pass a regular expression to select which layers to
-# train by name pattern.
-model.train(dataset_train, dataset_val, 
-            learning_rate=config.LEARNING_RATE / 10,
-            epochs=2, 
-            layers="all")
+    # Fine tune all layers
+    # Passing layers="all" trains all layers. You can also 
+    # pass a regular expression to select which layers to
+    # train by name pattern.
+    model.train(dataset_train, dataset_val, 
+                learning_rate=config.LEARNING_RATE / 10,
+                epochs=2, 
+                layers="all")
 
 class InferenceConfig(ShapesConfig):
     GPU_COUNT = 1
