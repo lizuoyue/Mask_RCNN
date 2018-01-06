@@ -122,7 +122,8 @@ class ShapesDataset(utils.Dataset):
         specs in image_info.
         """
         info = self.image_info[image_id]
-        img = Image.open(io.BytesIO(self.lzy_sftp.open(info['path'] + '/img.png').read()))
+        # img = Image.open(io.BytesIO(self.lzy_sftp.open(info['path'] + '/img.png').read()))
+        img = Image.open(info['path'] + '/img.png')
         return np.array(img).astype(np.uint8)[..., 0: 3]
 
     def image_reference(self, image_id):
@@ -138,7 +139,8 @@ class ShapesDataset(utils.Dataset):
         """
         info = self.image_info[image_id]
         polygons = []
-        lines = self.lzy_sftp.open(info['path'] + '/polygons.txt').read().decode('utf-8').split('\n')
+        # lines = self.lzy_sftp.open(info['path'] + '/polygons.txt').read().decode('utf-8').split('\n')
+        lines = open(info['path'] + '/polygons.txt', 'r').readlines()
         for line in lines:
             if line.strip() != '':
                 if line.strip() == '%':
