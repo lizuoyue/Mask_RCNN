@@ -155,6 +155,7 @@ class ShapesDataset(utils.Dataset):
             if np.array(temp[i][0]).astype(np.int32).sum() == 0:
                 temp[i][1] = False
         temp = [item[0] for item in temp if item[1]]
+        print(temp[0].size)
 
         mask = np.zeros([640, 640, len(temp)], dtype=np.uint8)
         for i, item in enumerate(temp):
