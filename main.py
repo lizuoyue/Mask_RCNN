@@ -35,7 +35,7 @@ class ShapesConfig(Config):
     to the toy shapes dataset.
     """
     # Give the configuration a recognizable name
-    NAME = "shapes"
+    NAME = "types"
 
     # Train on 1 GPU and 8 images per GPU. We can put multiple images on each
     # GPU because the images are small. Batch size is 8 (GPUs * images/GPU).
@@ -51,7 +51,7 @@ class ShapesConfig(Config):
     IMAGE_MAX_DIM = 640
 
     # Use smaller anchors because our image and objects are small
-    RPN_ANCHOR_SCALES = (80, 160, 240, 320)  # anchor side in pixels
+    RPN_ANCHOR_SCALES = (60, 120, 180, 240, 300)  # anchor side in pixels
 
     # Reduce training ROIs per image because the images are small and have
     # few objects. Aim to allow ROI sampling to pick 33% positive ROIs.
@@ -95,10 +95,10 @@ class ShapesDataset(utils.Dataset):
         # Generate random specifications of images (i.e. color and
         # list of shapes sizes and locations). This is more compact than
         # actual images. Images are generated on the fly in load_image().
-        self.lzy_ssh = paramiko.SSHClient()
-        self.lzy_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        self.lzy_ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
-        self.lzy_sftp = self.lzy_ssh.open_sftp()
+        # self.lzy_ssh = paramiko.SSHClient()
+        # self.lzy_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        # self.lzy_ssh.connect('cab-e81-28.ethz.ch', username = 'zoli', password = '64206960lzyLZY')
+        # self.lzy_sftp = self.lzy_ssh.open_sftp()
 
         with open('./AreaIdxList.txt', 'r') as f:
             self.lzy_area_idx_list = eval(f.read())
@@ -129,8 +129,8 @@ class ShapesDataset(utils.Dataset):
     def image_reference(self, image_id):
         """Return the shapes data of the image."""
         info = self.image_info[image_id]
-        if info["source"] == "type":
-            return info["type"]
+        if info["source"] == "types":
+            return info["types"]
         else:
             super(self.__class__).image_reference(self, image_id)
 
