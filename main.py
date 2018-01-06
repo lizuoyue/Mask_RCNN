@@ -249,13 +249,13 @@ log("gt_class_id", gt_class_id)
 log("gt_bbox", gt_bbox)
 log("gt_mask", gt_mask)
 
-visualize.display_instances(original_image, gt_bbox, gt_mask, gt_class_id, 
+visualize.display_instances('train.pdf', original_image, gt_bbox, gt_mask, gt_class_id, 
                             dataset_train.class_names, figsize=(8, 8))
 
 results = model.detect([original_image], verbose=1)
 
 r = results[0]
-visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'], 
+visualize.display_instances('valid.pdf', original_image, r['rois'], r['masks'], r['class_ids'], 
                             dataset_val.class_names, r['scores'], ax=get_ax())
 
 # Compute VOC-Style mAP @ IoU=0.5
