@@ -165,17 +165,17 @@ class ShapesDataset(utils.Dataset):
         class_ids = np.array([self.class_names.index('house') for _ in temp])
         return mask, class_ids.astype(np.int32)
 
+# Training dataset
+dataset_train = ShapesDataset()
+dataset_train.load_images(True, '/local/lizuoyue/Chicago_Area')
+dataset_train.prepare()
+
+# Validation dataset
+dataset_val = ShapesDataset()
+dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
+dataset_val.prepare()
+
 if False:
-    # Training dataset
-    dataset_train = ShapesDataset()
-    dataset_train.load_images(True, '/local/lizuoyue/Chicago_Area')
-    dataset_train.prepare()
-
-    # Validation dataset
-    dataset_val = ShapesDataset()
-    dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
-    dataset_val.prepare()
-
     # Create model in training mode
     model = modellib.MaskRCNN(mode="training", config=config,
                               model_dir=MODEL_DIR)
