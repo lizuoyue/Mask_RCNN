@@ -154,7 +154,7 @@ class ShapesDataset(utils.Dataset):
             draw.polygon(polygon, fill = 255, outline = 255)
             if np.array(temp[i][0]).astype(np.int32).sum() == 0:
                 temp[i][1] = False
-        temp = [item[1] for item in temp if item[0]]
+        temp = [item[0] for item in temp if item[1]]
 
         mask = np.zeros([640, 640, len(temp)], dtype=np.uint8)
         for i, item in enumerate(temp):
