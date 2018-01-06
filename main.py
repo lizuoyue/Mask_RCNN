@@ -176,7 +176,7 @@ dataset_val = ShapesDataset()
 dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
 dataset_val.prepare()
 
-if False:
+if True:
     # Create model in training mode
     model = modellib.MaskRCNN(mode="training", config=config,
                               model_dir=MODEL_DIR)
@@ -203,7 +203,7 @@ if False:
     # which layers to train by name pattern.
     model.train(dataset_train, dataset_val, 
                 learning_rate=config.LEARNING_RATE, 
-                epochs=1, 
+                epochs=10, 
                 layers='heads')
 
     # Fine tune all layers
@@ -212,8 +212,10 @@ if False:
     # train by name pattern.
     model.train(dataset_train, dataset_val, 
                 learning_rate=config.LEARNING_RATE / 10,
-                epochs=2, 
+                epochs=20, 
                 layers="all")
+
+quit()
 
 class InferenceConfig(ShapesConfig):
     GPU_COUNT = 1
