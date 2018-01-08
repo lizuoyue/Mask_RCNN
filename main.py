@@ -176,7 +176,7 @@ dataset_val = ShapesDataset()
 dataset_val.load_images(False, '/local/lizuoyue/Chicago_Area')
 dataset_val.prepare()
 
-if True:
+if False:
     # Create model in training mode
     model = modellib.MaskRCNN(mode="training", config=config,
                               model_dir=MODEL_DIR)
@@ -215,8 +215,6 @@ if True:
                 epochs=20, 
                 layers="all")
 
-quit()
-
 class InferenceConfig(ShapesConfig):
     GPU_COUNT = 1
     IMAGES_PER_GPU = 1
@@ -238,28 +236,29 @@ assert model_path != "", "Provide path to trained weights"
 print("Loading weights from ", model_path)
 model.load_weights(model_path, by_name=True)
 
+for i in range(20):
+    # Test on a random image
+    image_id = random.choice(dataset_val.image_ids)
+    original_image, image_meta, gt_class_id, gt_bbox, gt_mask =\
+        modellib.load_image_gt(dataset_val, inference_config, 
+                               image_id, use_mini_mask=False)
 
-# Test on a random image
-image_id = random.choice(dataset_val.image_ids)
-original_image, image_meta, gt_class_id, gt_bbox, gt_mask =\
-    modellib.load_image_gt(dataset_val, inference_config, 
-                           image_id, use_mini_mask=False)
+    log("original_image", original_image)
+    log("image_meta", image_meta)
+    log("gt_class_id", gt_class_id)
+    log("gt_bbox", gt_bbox)
+    log("gt_mask", gt_mask)
 
-log("original_image", original_image)
-log("image_meta", image_meta)
-log("gt_class_id", gt_class_id)
-log("gt_bbox", gt_bbox)
-log("gt_mask", gt_mask)
+    visualize.display_instances('train%d.pdf' % i, original_image, gt_bbox, gt_mask, gt_class_id, 
+                                dataset_train.class_names, figsize=(8, 8))
 
-visualize.display_instances('train.pdf', original_image, gt_bbox, gt_mask, gt_class_id, 
-                            dataset_train.class_names, figsize=(8, 8))
+    results = model.detect([original_image], verbose=1)
 
-results = model.detect([original_image], verbose=1)
+    r = results[0]
+    visualize.display_instances('valid%d.pdf' % i, original_image, r['rois'], r['masks'], r['class_ids'], 
+                                dataset_val.class_names, r['scores'], ax=get_ax())
 
-r = results[0]
-visualize.display_instances('valid.pdf', original_image, r['rois'], r['masks'], r['class_ids'], 
-                            dataset_val.class_names, r['scores'], ax=get_ax())
-
+quit()
 # Compute VOC-Style mAP @ IoU=0.5
 # Running on 10 images. Increase for better accuracy.
 image_ids = np.random.choice(dataset_val.image_ids, 10)
